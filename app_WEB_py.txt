@@ -1,0 +1,91 @@
+import streamlit as st
+import pandas as pd
+from datetime import datetime
+import os
+
+# Configurazione della pagina web ATS Liguria
+st.set_page_config(
+    page_title="ATS Liguria - Check List Antincendio",
+    page_icon="🔥",
+    layout="wide"
+)
+
+# --- INTESTAZIONE GRAFICA ---
+st.markdown("<h2 style='text-align: center; color: #003366;'>SERVIZIO DI PREVENZIONE E PROTEZIONE</h2>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center; color: #475569; font-style: italic;'>Sistema di Gestione Qualità Aziendale</h4>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center; background-color: #003366; color: white; padding: 10px;'>CHECK LIST - VERIFICHE DISPOSITIVI ANTINCENDIO</h3>", unsafe_allow_html=True)
+
+# Liste di opzioni per i reparti
+OPZIONI_DIPARTIMENTI = [
+    "EMERGENZA E ACCETTAZIONE", "CHIRURGICO", "ORTOPEDICO TRAUMATOLOGICO", "MEDICO",
+    "NEUROSCIENZE", "ONCOLOGICO", "RADIOLOGIA DEI SERVIZI", "PREVENZIONE", "TECNICO AMMINISTRATIVO"
+]
+
+OPZIONI_SC_SSD = [
+    "S.C. 118 EMERGENZA TERRITORIALE", "S.C. ANESTESIA E RIANIMAZIONE", "S.C. CARDIOLOGIA E UTIC",
+    "S.C. CHIRURGIA GENERALE", "S.C. DIREZIONE MEDICA", "S.C. IGIENE E SANITÀ PUBBLICA",
+    "S.C. PRONTO SOCCORSO", "S.C. PATRIMONIO E GESTIONE TECNICA", "S.D. MEDICINA DEL LAVORO"
+]
+
+OPZIONI_SEDI = ["SAN PAOLO SAVONA", "SANTA CORONA PIETRA LIGURE", "SANTA MARIA MISERICORDIA ALBENGA", "SAN GIUSEPPE CAIRO"]
+ESITI_STANDARD = ["SI", "NO", "N.P."]
+
+# --- CAMPI DELLA SCHEDA ---
+st.subheader("👤 DATI COMPILATORE E UBICAZIONE")
+col1, col2 = st.columns(2)
+
+with col1:
+    matricola = st.text_input("Matricola Operatore*")
+    dipartimento = st.selectbox("Dipartimento*", [""] + OPZIONI_DIPARTIMENTI)
+    sede = st.selectbox("Sede Aziendale", [""] + OPZIONI_SEDI)
+
+with col2:
+    sc_ssd = st.selectbox("SC / SSD*", [""] + OPZIONI_SC_SSD)
+    comune = st.text_input("Comune / Presidio")
+
+st.subheader("🧯 VERIFICA ESTINTORI")
+c1, c2, c3 = st.columns(3)
+with c1:
+    est1 = st.selectbox("1. Visibili e accessibili", ESITI_STANDARD)
+    est2 = st.selectbox("2. Segnaletica presente", ESITI_STANDARD)
+with c2:
+    est3 = st.selectbox("3. Ancorato correttamente", ESITI_STANDARD)
+    est4 = st.selectbox("4. Integrità sigillo/spinotto", ESITI_STANDARD)
+with c3:
+    est5 = st.selectbox("5. Manometro nel verde", ESITI_STANDARD)
+
+note = st.text_area("Note o anomalie riscontrate")
+
+# --- BOTTONE DI INVIO ---
+st.markdown("---")
+if st.button("INVIA COMPILAZIONE", type="primary", use_container_width=True):
+    if not matricola or not dipartimento or not sc_ssd:
+        st.error("Per favore, compila i campi obbligatori contrassegnati con l'asterisco (*).")
+    else:
+        # Salvataggio automatico sul file di raccolta dati
+        file_dati = "archivio_compilazioni.csv"
+        timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        
+        nuova_riga = {
+            "Timestamp": timestamp,
+            "Matricola": matricola,
+            "Dipartimento": dipartimento,
+            "SC_SSD": sc_ssd,
+            "Sede": sede,
+            "Comune": comune,
+            "Est_Visibile": est1,
+            "Est_Segnale": est2,
+            "Est_Ancorato": est3,
+            "Est_Sigillo": est4,
+            "Est_Manometro": est5,
+            "Note": note
+        }
+        
+        df_nuovo = pd.DataFrame([nuova_riga])
+        
+        if not os.path.exists(file_dati):
+            df_nuovo.to_csv(file_dati, index=False, encoding="utf-8-sig")
+        else:
+            df_nuovo.to_csv(file_dati, mode='a', header=False, index=False, encoding="utf-8-sig")
+            
+        st.success("✅ Compilazione inviata con successo! I dati sono stati registrati centralmente per l'SPP.")
