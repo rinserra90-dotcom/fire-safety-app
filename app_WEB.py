@@ -2,6 +2,8 @@ import streamlit as st
 from datetime import datetime
 import os
 import openpyxl
+import smtplib
+from email.message import EmailMessage
 
 # Configurazione pagina Streamlit
 st.set_page_config(
@@ -365,9 +367,10 @@ with st.form("form_ispezione"):
 
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Pulsante di Invio/Salvataggio
-    submitted = st.form_submit_button("💾 SALVA SU EXCEL")
+    # Pulsante pulito con la scritta richiesta
+    submitted = st.form_submit_button("Salva e invia")
 
+# --- GESTIONE DEL CLICK SUL PULSANTE ---
 if submitted:
     if not dipartimento or not sc_ssd:
         st.error("⚠️ I campi 'Dipartimento' e 'SC/SSD' sono obbligatori!")
@@ -461,16 +464,30 @@ if submitted:
 
             ws.append(riga_dati)
             wb.save(NOME_FILE_EXCEL)
-            st.success("✅ Registrazione inviata e salvata con successo sul file Excel!")
 
-            # --- PULSANTE DI DOWNLOAD DIRETTO AGGIUNTO QUI ---
-            with open(NOME_FILE_EXCEL, "rb") as file:
-                st.download_button(
-                    label="📥 Scarica il File Excel Aggiornato",
-                    data=file,
-                    file_name=NOME_FILE_EXCEL,
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                )
+            # --- INVIO AUTOMATICO VIA EMAIL ---
+            mittente_email = st.secrets["email"]["mittente"]
+            password_email = st.secrets["email"]["password"]
+            destinatario_email = st.secrets["email"]["destinatario"]
+
+            msg = EmailMessage()
+            msg["Subject"] = f"Nuova Ispezione Antincendio - {dipartimento} ({sc_ssd})"
+            msg["From"] = mittente_email
+            msg["To"] = destinatario_email
+            msg.set_content(f"È stata compilata una nuova check-list di verifica antincendio.\n\nDipartimento: {dipartimento}\nSC/SSD: {sc_ssd}\nOperatore (Matricola): {matricola}\nData e Ora: {timestamp_attuale}\n\nIn allegato trovi il file Excel aggiornato con tutte le registrazioni.")
+
+            # Allega il file Excel
+            with open(NOME_FILE_EXCEL, "rb") as f:
+                file_data = f.read()
+                file_name = os.path.basename(NOME_FILE_EXCEL)
+            msg.add_attachment(file_data, maintype="application", subtype="vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename=file_name)
+
+            # Invio tramite server SMTP di Google (Gmail)
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+                smtp.login(mittente_email, password_email)
+                smtp.send_message(msg)
+
+            st.success("✅ Modulo compilato e inviato con successo!")
 
         except Exception as e:
-            st.error(f"❌ Si è verificato un errore durante il salvataggio: {e}")
+            st.error(f"❌ Errore durante l'invio: {e}")
