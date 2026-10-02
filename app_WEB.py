@@ -368,100 +368,109 @@ with st.form("form_ispezione"):
     # Pulsante di Invio/Salvataggio
     submitted = st.form_submit_button("💾 SALVA SU EXCEL")
 
-    if submitted:
-        if not dipartimento or not sc_ssd:
-            st.error("⚠️ I campi 'Dipartimento' e 'SC/SSD' sono obbligatori!")
-        else:
-            try:
-                if not os.path.exists(NOME_FILE_EXCEL):
-                    wb_new = openpyxl.Workbook()
-                    ws_new = wb_new.active
-                    ws_new.title = NOME_FOGLIO_TARGET
-                    wb_new.save(NOME_FILE_EXCEL)
+if submitted:
+    if not dipartimento or not sc_ssd:
+        st.error("⚠️ I campi 'Dipartimento' e 'SC/SSD' sono obbligatori!")
+    else:
+        try:
+            if not os.path.exists(NOME_FILE_EXCEL):
+                wb_new = openpyxl.Workbook()
+                ws_new = wb_new.active
+                ws_new.title = NOME_FOGLIO_TARGET
+                wb_new.save(NOME_FILE_EXCEL)
 
-                wb = openpyxl.load_workbook(NOME_FILE_EXCEL)
-                if NOME_FOGLIO_TARGET in wb.sheetnames:
-                    ws = wb[NOME_FOGLIO_TARGET]
-                else:
-                    ws = wb.active
+            wb = openpyxl.load_workbook(NOME_FILE_EXCEL)
+            if NOME_FOGLIO_TARGET in wb.sheetnames:
+                ws = wb[NOME_FOGLIO_TARGET]
+            else:
+                ws = wb.active
 
-                timestamp_attuale = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+            timestamp_attuale = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-                note_uscite_comb = f"{uscite_prob} | Altro: {uscite_altro}".strip(" | Altro:")
-                note_cartello_comb = f"{cartello_lum} | Altro: {cartello_altro}".strip(" | Altro:")
-                note_led_comb = f"Lampada N°: {led_lampada_num} | LED: {led_stato}" if led_lampada_num or led_stato else ""
-                note_liquidi_comb = f"Litri: {liquidi_litri} | Stanze: {liquidi_stanze}" if liquidi_litri or liquidi_stanze else ""
-                note_scaffali_comb = f"{scaffali_presenza} - Tipo: {scaffali_tipo}"
-                note_bombole_dett = f"N° Bombole: {bombole_num} | Litri N°: {bombole_litri}" if bombole_num or bombole_litri else ""
+            note_uscite_comb = f"{uscite_prob} | Altro: {uscite_altro}".strip(" | Altro:")
+            note_cartello_comb = f"{cartello_lum} | Altro: {cartello_altro}".strip(" | Altro:")
+            note_led_comb = f"Lampada N°: {led_lampada_num} | LED: {led_stato}" if led_lampada_num or led_stato else ""
+            note_liquidi_comb = f"Litri: {liquidi_litri} | Stanze: {liquidi_stanze}" if liquidi_litri or liquidi_stanze else ""
+            note_scaffali_comb = f"{scaffali_presenza} - Tipo: {scaffali_tipo}"
+            note_bombole_dett = f"N° Bombole: {bombole_num} | Litri N°: {bombole_litri}" if bombole_num or bombole_litri else ""
 
-                riga_dati = [
-                    timestamp_attuale,
-                    matricola,
-                    dipartimento,
-                    sc_ssd,
-                    sede,
-                    desc_sede,
-                    comune,
-                    via,
-                    padiglione,
-                    piano,
-                    lato,
-                    est1, est2, est3, est4, est5, est6, est7,
-                    estintore_num,
-                    estintore_problema,
-                    note_estintori,
-                    idranti,
-                    idrante_num,
-                    idrante_problema,
-                    note_idranti,
-                    coperta,
-                    coperta_segnalata,
-                    coperta_integra,
-                    note_coperta,
-                    fumi,
-                    note_fumi,
-                    centralina,
-                    note_centralina,
-                    pulsanti,
-                    pulsanti_privi,
-                    rei_apertura,
-                    rei_maniglioni,
-                    rei_num_porte,
-                    rei_num_ante,
-                    rei_prob,
-                    non_rei_esito,
-                    non_rei_num,
-                    non_rei_prob,
-                    non_rei_ante,
-                    non_rei_stato,
-                    uscite_esito,
-                    note_uscite_comb,
-                    note_cartello_comb,
-                    planimetrie_pres,
-                    planimetrie_agg,
-                    lampade_integre,
-                    lampade_rotte_num,
-                    carica_led_pres,
-                    note_led_comb,
-                    liquidi_pres,
-                    note_liquidi_comb,
-                    armadi_integri,
-                    armadi_note_libera,
-                    depositi_num,
-                    depositi_fumi,
-                    depositi_rei,
-                    depositi_estintore,
-                    note_scaffali_comb,
-                    bombole_pres,
-                    note_bombole_dett,
-                    bombole_fumi,
-                    bombole_areato,
-                    bombole_ancorate,
-                ]
+            riga_dati = [
+                timestamp_attuale,
+                matricola,
+                dipartimento,
+                sc_ssd,
+                sede,
+                desc_sede,
+                comune,
+                via,
+                padiglione,
+                piano,
+                lato,
+                est1, est2, est3, est4, est5, est6, est7,
+                estintore_num,
+                estintore_problema,
+                note_estintori,
+                idranti,
+                idrante_num,
+                idrante_problema,
+                note_idranti,
+                coperta,
+                coperta_segnalata,
+                coperta_integra,
+                note_coperta,
+                fumi,
+                note_fumi,
+                centralina,
+                note_centralina,
+                pulsanti,
+                pulsanti_privi,
+                rei_apertura,
+                rei_maniglioni,
+                rei_num_porte,
+                rei_num_ante,
+                rei_prob,
+                non_rei_esito,
+                non_rei_num,
+                non_rei_prob,
+                non_rei_ante,
+                non_rei_stato,
+                uscite_esito,
+                note_uscite_comb,
+                note_cartello_comb,
+                planimetrie_pres,
+                planimetrie_agg,
+                lampade_integre,
+                lampade_rotte_num,
+                carica_led_pres,
+                note_led_comb,
+                liquidi_pres,
+                note_liquidi_comb,
+                armadi_integri,
+                armadi_note_libera,
+                depositi_num,
+                depositi_fumi,
+                depositi_rei,
+                depositi_estintore,
+                note_scaffali_comb,
+                bombole_pres,
+                note_bombole_dett,
+                bombole_fumi,
+                bombole_areato,
+                bombole_ancorate,
+            ]
 
-                ws.append(riga_dati)
-                wb.save(NOME_FILE_EXCEL)
-                st.success("✅ Registrazione inviata e salvata con successo sul file Excel!")
+            ws.append(riga_dati)
+            wb.save(NOME_FILE_EXCEL)
+            st.success("✅ Registrazione inviata e salvata con successo sul file Excel!")
 
-            except Exception as e:
-                st.error(f"❌ Si è verificato un errore durante il salvataggio: {e}")
+            # --- PULSANTE DI DOWNLOAD DIRETTO AGGIUNTO QUI ---
+            with open(NOME_FILE_EXCEL, "rb") as file:
+                st.download_button(
+                    label="📥 Scarica il File Excel Aggiornato",
+                    data=file,
+                    file_name=NOME_FILE_EXCEL,
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
+
+        except Exception as e:
+            st.error(f"❌ Si è verificato un errore durante il salvataggio: {e}")
