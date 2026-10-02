@@ -367,127 +367,126 @@ with st.form("form_ispezione"):
 
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Pulsante pulito con la scritta richiesta
+    # Pulsante di Invio/Salvataggio pulito
     submitted = st.form_submit_button("Salva e invia")
 
-# --- GESTIONE DEL CLICK SUL PULSANTE ---
-if submitted:
-    if not dipartimento or not sc_ssd:
-        st.error("⚠️ I campi 'Dipartimento' e 'SC/SSD' sono obbligatori!")
-    else:
-        try:
-            if not os.path.exists(NOME_FILE_EXCEL):
-                wb_new = openpyxl.Workbook()
-                ws_new = wb_new.active
-                ws_new.title = NOME_FOGLIO_TARGET
-                wb_new.save(NOME_FILE_EXCEL)
+    if submitted:
+        if not dipartimento or not sc_ssd:
+            st.error("⚠️ I campi 'Dipartimento' e 'SC/SSD' sono obbligatori!")
+        else:
+            try:
+                if not os.path.exists(NOME_FILE_EXCEL):
+                    wb_new = openpyxl.Workbook()
+                    ws_new = wb_new.active
+                    ws_new.title = NOME_FOGLIO_TARGET
+                    wb_new.save(NOME_FILE_EXCEL)
 
-            wb = openpyxl.load_workbook(NOME_FILE_EXCEL)
-            if NOME_FOGLIO_TARGET in wb.sheetnames:
-                ws = wb[NOME_FOGLIO_TARGET]
-            else:
-                ws = wb.active
+                wb = openpyxl.load_workbook(NOME_FILE_EXCEL)
+                if NOME_FOGLIO_TARGET in wb.sheetnames:
+                    ws = wb[NOME_FOGLIO_TARGET]
+                else:
+                    ws = wb.active
 
-            timestamp_attuale = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                timestamp_attuale = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-            note_uscite_comb = f"{uscite_prob} | Altro: {uscite_altro}".strip(" | Altro:")
-            note_cartello_comb = f"{cartello_lum} | Altro: {cartello_altro}".strip(" | Altro:")
-            note_led_comb = f"Lampada N°: {led_lampada_num} | LED: {led_stato}" if led_lampada_num or led_stato else ""
-            note_liquidi_comb = f"Litri: {liquidi_litri} | Stanze: {liquidi_stanze}" if liquidi_litri or liquidi_stanze else ""
-            note_scaffali_comb = f"{scaffali_presenza} - Tipo: {scaffali_tipo}"
-            note_bombole_dett = f"N° Bombole: {bombole_num} | Litri N°: {bombole_litri}" if bombole_num or bombole_litri else ""
+                note_uscite_comb = f"{uscite_prob} | Altro: {uscite_altro}".strip(" | Altro:")
+                note_cartello_comb = f"{cartello_lum} | Altro: {cartello_altro}".strip(" | Altro:")
+                note_led_comb = f"Lampada N°: {led_lampada_num} | LED: {led_stato}" if led_lampada_num or led_stato else ""
+                note_liquidi_comb = f"Litri: {liquidi_litri} | Stanze: {liquidi_stanze}" if liquidi_litri or liquidi_stanze else ""
+                note_scaffali_comb = f"{scaffali_presenza} - Tipo: {scaffali_tipo}"
+                note_bombole_dett = f"N° Bombole: {bombole_num} | Litri N°: {bombole_litri}" if bombole_num or bombole_litri else ""
 
-            riga_dati = [
-                timestamp_attuale,
-                matricola,
-                dipartimento,
-                sc_ssd,
-                sede,
-                desc_sede,
-                comune,
-                via,
-                padiglione,
-                piano,
-                lato,
-                est1, est2, est3, est4, est5, est6, est7,
-                estintore_num,
-                estintore_problema,
-                note_estintori,
-                idranti,
-                idrante_num,
-                idrante_problema,
-                note_idranti,
-                coperta,
-                coperta_segnalata,
-                coperta_integra,
-                note_coperta,
-                fumi,
-                note_fumi,
-                centralina,
-                note_centralina,
-                pulsanti,
-                pulsanti_privi,
-                rei_apertura,
-                rei_maniglioni,
-                rei_num_porte,
-                rei_num_ante,
-                rei_prob,
-                non_rei_esito,
-                non_rei_num,
-                non_rei_prob,
-                non_rei_ante,
-                non_rei_stato,
-                uscite_esito,
-                note_uscite_comb,
-                note_cartello_comb,
-                planimetrie_pres,
-                planimetrie_agg,
-                lampade_integre,
-                lampade_rotte_num,
-                carica_led_pres,
-                note_led_comb,
-                liquidi_pres,
-                note_liquidi_comb,
-                armadi_integri,
-                armadi_note_libera,
-                depositi_num,
-                depositi_fumi,
-                depositi_rei,
-                depositi_estintore,
-                note_scaffali_comb,
-                bombole_pres,
-                note_bombole_dett,
-                bombole_fumi,
-                bombole_areato,
-                bombole_ancorate,
-            ]
+                riga_dati = [
+                    timestamp_attuale,
+                    matricola,
+                    dipartimento,
+                    sc_ssd,
+                    sede,
+                    desc_sede,
+                    comune,
+                    via,
+                    padiglione,
+                    piano,
+                    lato,
+                    est1, est2, est3, est4, est5, est6, est7,
+                    estintore_num,
+                    estintore_problema,
+                    note_estintori,
+                    idranti,
+                    idrante_num,
+                    idrante_problema,
+                    note_idranti,
+                    coperta,
+                    coperta_segnalata,
+                    coperta_integra,
+                    note_coperta,
+                    fumi,
+                    note_fumi,
+                    centralina,
+                    note_centralina,
+                    pulsanti,
+                    pulsanti_privi,
+                    rei_apertura,
+                    rei_maniglioni,
+                    rei_num_porte,
+                    rei_num_ante,
+                    rei_prob,
+                    non_rei_esito,
+                    non_rei_num,
+                    non_rei_prob,
+                    non_rei_ante,
+                    non_rei_stato,
+                    uscite_esito,
+                    note_uscite_comb,
+                    note_cartello_comb,
+                    planimetrie_pres,
+                    planimetrie_agg,
+                    lampade_integre,
+                    lampade_rotte_num,
+                    carica_led_pres,
+                    note_led_comb,
+                    liquidi_pres,
+                    note_liquidi_comb,
+                    armadi_integri,
+                    armadi_note_libera,
+                    depositi_num,
+                    depositi_fumi,
+                    depositi_rei,
+                    depositi_estintore,
+                    note_scaffali_comb,
+                    bombole_pres,
+                    note_bombole_dett,
+                    bombole_fumi,
+                    bombole_areato,
+                    bombole_ancorate,
+                ]
 
-            ws.append(riga_dati)
-            wb.save(NOME_FILE_EXCEL)
+                ws.append(riga_dati)
+                wb.save(NOME_FILE_EXCEL)
 
-            # --- INVIO AUTOMATICO VIA EMAIL ---
-            mittente_email = st.secrets["email"]["mittente"]
-            password_email = st.secrets["email"]["password"]
-            destinatario_email = st.secrets["email"]["destinatario"]
+                # --- INVIO AUTOMATICO VIA EMAIL (INVISIBILE PER L'OPERATORE) ---
+                mittente_email = st.secrets["email"]["mittente"]
+                password_email = st.secrets["email"]["password"]
+                destinatario_email = st.secrets["email"]["destinatario"]
 
-            msg = EmailMessage()
-            msg["Subject"] = f"Nuova Ispezione Antincendio - {dipartimento} ({sc_ssd})"
-            msg["From"] = mittente_email
-            msg["To"] = destinatario_email
-            msg.set_content(f"È stata compilata una nuova check-list di verifica antincendio.\n\nDipartimento: {dipartimento}\nSC/SSD: {sc_ssd}\nOperatore (Matricola): {matricola}\nData e Ora: {timestamp_attuale}\n\nIn allegato trovi il file Excel aggiornato con tutte le registrazioni.")
+                msg = EmailMessage()
+                msg["Subject"] = f"Nuova Ispezione Antincendio - {dipartimento} ({sc_ssd})"
+                msg["From"] = mittente_email
+                msg["To"] = destinatario_email
+                msg.set_content(f"È stata compilata una nuova check-list di verifica antincendio.\n\nDipartimento: {dipartimento}\nSC/SSD: {sc_ssd}\nOperatore (Matricola): {matricola}\nData e Ora: {timestamp_attuale}\n\nIn allegato trovi il file Excel aggiornato con tutte le registrazioni.")
 
-            # Allega il file Excel
-            with open(NOME_FILE_EXCEL, "rb") as f:
-                file_data = f.read()
-                file_name = os.path.basename(NOME_FILE_EXCEL)
-            msg.add_attachment(file_data, maintype="application", subtype="vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename=file_name)
+                # Allega il file Excel aggiornato
+                with open(NOME_FILE_EXCEL, "rb") as f:
+                    file_data = f.read()
+                    file_name = os.path.basename(NOME_FILE_EXCEL)
+                msg.add_attachment(file_data, maintype="application", subtype="vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename=file_name)
 
-            # Invio tramite server SMTP di Google (Gmail)
-            with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-                smtp.login(mittente_email, password_email)
-                smtp.send_message(msg)
+                # Invio tramite server SMTP di Google (Gmail)
+                with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+                    smtp.login(mittente_email, password_email)
+                    smtp.send_message(msg)
 
-            st.success("✅ Modulo compilato e inviato con successo!")
+                st.success("✅ Modulo compilato e inviato con successo!")
 
-        except Exception as e:
-            st.error(f"❌ Errore durante l'invio: {e}")
+            except Exception as e:
+                st.error(f"❌ Si è verificato un errore durante l'invio: {e}")
